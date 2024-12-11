@@ -17,7 +17,7 @@ struct ContentView: View {
     // タブの定義
     enum Tab {
         case web
-        case html
+        case markdown
     }
     
     @State private var selectedTab: Tab = .web
@@ -64,14 +64,14 @@ struct ContentView: View {
                 }
                 .padding([.top])
 
-                // タブに応じて CTWebView または CTHTMLSourceView を表示
+                // タブに応じて CTWebView または CTMarkDownSourceView を表示
                 if selectedTab == .web {
                     CTWebView(url: $url, htmlSource: $htmlSource, isLoading: $isLoading, urlString: $urlString)
                 } else {
-                    CTHTMLSourceView(htmlSource: $htmlSource)
+                    CTMarkDownSourceView(markdownSource: $htmlSource)
                 }
             }
-            .navigationTitle("Simple Web Browser")
+            .navigationTitle("CT Markdown Editor")
             .toolbar {
                 #if os(iOS)
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -81,10 +81,10 @@ struct ContentView: View {
                         Text("Web")
                     }
 
-                    // HTML Sourceタブへの切り替えボタン
-                    Button(action: { selectedTab = .html }) {
+                    // MarkDown Sourceタブへの切り替えボタン
+                    Button(action: { selectedTab = .markdown }) {
                         Image(systemName: "doc.text")
-                        Text("HTML Source")
+                        Text("MarkDown Source")
                     }
                 }
                 #endif
