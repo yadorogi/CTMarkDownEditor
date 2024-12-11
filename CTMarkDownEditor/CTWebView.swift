@@ -7,12 +7,13 @@
 
 import SwiftUI
 import WebKit
+import HTML2Markdown
 
 struct CTWebView: View {
     @Binding var url: URL?
     @Binding var htmlSource: String
-    @Binding var isLoading: Bool  // ロード中の状態をバインド
-    @Binding var urlString: String  // URL入力フィールドの文字列をバインド
+    @Binding var isLoading: Bool
+    @Binding var urlString: String
 
     var body: some View {
         PlatformWebView(url: $url, htmlSource: $htmlSource, isLoading: $isLoading, urlString: $urlString)
@@ -24,8 +25,8 @@ struct CTWebView: View {
 struct PlatformWebView: UIViewRepresentable {
     @Binding var url: URL?
     @Binding var htmlSource: String
-    @Binding var isLoading: Bool  // ロード中の状態をバインド
-    @Binding var urlString: String  // URL入力フィールドの文字列をバインド
+    @Binding var isLoading: Bool
+    @Binding var urlString: String
 
     func makeUIView(context: Context) -> WKWebView {
         let webView = WKWebView()
@@ -37,7 +38,8 @@ struct PlatformWebView: UIViewRepresentable {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        if let url = url {
+        guard let url = url else { return }
+        if webView.url != url {
             webView.load(URLRequest(url: url))
         }
     }
@@ -53,67 +55,73 @@ struct PlatformWebView: UIViewRepresentable {
             self.parent = parent
         }
 
-        // ページのロード開始
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            DispatchQueue.main.async {
-                self.parent.isLoading = true
-            }
+            parent.isLoading = true
         }
 
-        // ページのロード完了
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            // 現在のURLを取得してURL入力フィールドを更新
-            if let currentURL = webView.url?.absoluteString {
-                DispatchQueue.main.async {
-                    self.parent.urlString = currentURL
-                }
-            }
-
-            webView.evaluateJavaScript("document.documentElement.outerHTML.toString()") { (result, error) in
-                if let html = result as? String {
-                    DispatchQueue.main.async {
-                        self.parent.htmlSource = html
-                        self.parent.isLoading = false
-                    }
-                }
+            parent.isLoading = false
+            
+            // 1回目のHTML取得
+            fetchHTML(webView: webView)
+            
+            // 2回目のHTML取得（2秒後）
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.fetchHTML(webView: webView)
             }
         }
-
-        // ページのロード失敗
-        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            handleLoadError(error, webView: webView)
-        }
-
+        
         func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-            handleLoadError(error, webView: webView)
-        }
-
-        private func handleLoadError(_ error: Error, webView: WKWebView) {
-            let nsError = error as NSError
-            // エラーコード -999 (NSURLErrorCancelled) は無視
-            if nsError.code == NSURLErrorCancelled {
-                DispatchQueue.main.async {
-                    self.parent.isLoading = false
-                }
+            if (error as NSError).code == NSURLErrorCancelled {
                 return
             }
-            DispatchQueue.main.async {
-                self.parent.isLoading = false
-                self.parent.htmlSource = "Failed to load page: \(error.localizedDescription)"
+            parent.isLoading = false
+            parent.htmlSource = "Failed to load: \(error.localizedDescription)"
+        }
+        
+        /// ページのHTMLを取得する関数
+        private func fetchHTML(webView: WKWebView) {
+            let script = """
+            if (document.readyState === 'complete') {
+                document.documentElement.outerHTML
+            } else {
+                null
+            }
+            """
+            webView.evaluateJavaScript(script) { result, error in
+                if let html = result as? String {
+                    self.parent.htmlSource = html
+                    print("HTML source updated successfully.")
+                    self.saveHTMLToFile(html)
+                    self.convertHTMLToMarkdown(html)
+                } else if let error = error {
+                    print("Error fetching HTML: \(error.localizedDescription)")
+                }
             }
         }
 
-        // リダイレクトの検出と処理
-        func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping @MainActor (WKNavigationResponsePolicy) -> Void) {
-            if let response = navigationResponse.response as? HTTPURLResponse,
-               let url = response.url {
-                // リダイレクトされたURLをURL入力フィールドに設定
-                DispatchQueue.main.async {
-                    self.parent.urlString = url.absoluteString
-                    self.parent.url = url
-                }
+        /// HTMLソースを一時ディレクトリに保存する
+        private func saveHTMLToFile(_ html: String) {
+            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("htmlSource.html")
+            do {
+                try html.write(to: fileURL, atomically: true, encoding: .utf8)
+                print("HTML source saved to: \(fileURL.path)")
+            } catch {
+                print("Failed to save HTML source: \(error.localizedDescription)")
             }
-            decisionHandler(.allow)
+        }
+
+        /// Markdownソースを一時ディレクトリに保存する
+        private func convertHTMLToMarkdown(_ html: String) {
+            do {
+                let dom = try HTMLParser().parse(html: html)
+                let markdown = dom.markdownFormatted(options: .unorderedListBullets)
+                let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("markdownSource.md")
+                try markdown.write(to: fileURL, atomically: true, encoding: .utf8)
+                print("Markdown source saved to: \(fileURL.path)")
+            } catch {
+                print("Failed to convert and save Markdown: \(error.localizedDescription)")
+            }
         }
     }
 }
@@ -122,24 +130,30 @@ struct PlatformWebView: UIViewRepresentable {
 struct PlatformWebView: NSViewRepresentable {
     @Binding var url: URL?
     @Binding var htmlSource: String
-    @Binding var isLoading: Bool  // ロード中の状態をバインド
-    @Binding var urlString: String  // URL入力フィールドの文字列をバインド
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
+    @Binding var isLoading: Bool
+    @Binding var urlString: String
 
     func makeNSView(context: Context) -> WKWebView {
-        let webView = WKWebView()
+        let configuration = WKWebViewConfiguration()
+        configuration.preferences.javaScriptEnabled = true
+        configuration.websiteDataStore = .default()
+        
+        let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
-        // 必要に応じて設定を追加
+        
+        if let url = url {
+            webView.load(URLRequest(url: url))
+        }
         return webView
     }
 
-    func updateNSView(_ nsView: WKWebView, context: Context) {
-        if let url = url, nsView.url != url {
-            nsView.load(URLRequest(url: url))
-        }
+    func updateNSView(_ webView: WKWebView, context: Context) {
+        guard let url = url, url != webView.url else { return }
+        webView.load(URLRequest(url: url))
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
 
     class Coordinator: NSObject, WKNavigationDelegate {
@@ -149,67 +163,36 @@ struct PlatformWebView: NSViewRepresentable {
             self.parent = parent
         }
 
-        // ページのロード開始
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            DispatchQueue.main.async {
-                self.parent.isLoading = true
-            }
+            parent.isLoading = true
         }
 
-        // ページのロード完了
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            // 現在のURLを取得してURL入力フィールドを更新
-            if let currentURL = webView.url?.absoluteString {
-                DispatchQueue.main.async {
-                    self.parent.urlString = currentURL
-                }
-            }
-            
-            webView.evaluateJavaScript("document.documentElement.outerHTML.toString()") { (result, error) in
+            parent.isLoading = false
+            // ページのHTMLソースを取得
+            webView.evaluateJavaScript("document.documentElement.outerHTML") { result, error in
                 if let html = result as? String {
-                    DispatchQueue.main.async {
-                        self.parent.htmlSource = html
-                        self.parent.isLoading = false
-                    }
+                    self.parent.htmlSource = html
+                } else if let error = error {
+                    print("Error fetching HTML: \(error.localizedDescription)")
                 }
             }
-        }
-
-        // ページのロード失敗
-        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            handleLoadError(error, webView: webView)
         }
 
         func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-            handleLoadError(error, webView: webView)
-        }
-
-        private func handleLoadError(_ error: Error, webView: WKWebView) {
-            let nsError = error as NSError
-            // エラーコード -999 (NSURLErrorCancelled) は無視
-            if nsError.code == NSURLErrorCancelled {
-                DispatchQueue.main.async {
-                    self.parent.isLoading = false
-                }
+            if (error as NSError).code == NSURLErrorCancelled {
                 return
             }
-            DispatchQueue.main.async {
-                self.parent.isLoading = false
-                self.parent.htmlSource = "Failed to load page: \(error.localizedDescription)"
-            }
+            parent.isLoading = false
+            parent.htmlSource = "Failed to load: \(error.localizedDescription)"
         }
 
-        // リダイレクトの検出と処理
-        func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping @MainActor (WKNavigationResponsePolicy) -> Void) {
-            if let response = navigationResponse.response as? HTTPURLResponse,
-               let url = response.url {
-                // リダイレクトされたURLをURL入力フィールドに設定
-                DispatchQueue.main.async {
-                    self.parent.urlString = url.absoluteString
-                    self.parent.url = url
-                }
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            if (error as NSError).code == NSURLErrorCancelled {
+                return
             }
-            decisionHandler(.allow)
+            parent.isLoading = false
+            parent.htmlSource = "Failed to load: \(error.localizedDescription)"
         }
     }
 }
