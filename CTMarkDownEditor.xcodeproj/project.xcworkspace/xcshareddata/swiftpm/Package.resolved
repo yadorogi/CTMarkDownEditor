@@ -1,0 +1,24 @@
+{
+  "originHash" : "d446a95e50e4a531d85f35b5bfc8462daf952be5e48162a9349a11d9106e881d",
+  "pins" : [
+    {
+      "identity" : "html2markdown",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/divadretlaw/HTML2Markdown",
+      "state" : {
+        "revision" : "fe37711094b261d9fceeaf021143002ba37e563e",
+        "version" : "3.0.2"
+      }
+    },
+    {
+      "identity" : "swiftsoup",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scinfu/SwiftSoup",
+      "state" : {
+        "revision" : "0837db354faf9c9deb710dc597046edaadf5360f",
+        "version" : "2.7.6"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		527C40692D09A70C00730254 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 527C40682D09A70C00730254 /* WebKit.framework */; };
+		52954C752D09D84D00186D3B /* HTML2Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 52954C742D09D84D00186D3B /* HTML2Markdown */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,9 +35,22 @@
 		527C40682D09A70C00730254 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.1.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		52954C722D09C37500186D3B /* Exceptions for "CTMarkDownEditor" folder in "CTMarkDownEditor" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 527C40382D09A6B500730254 /* CTMarkDownEditor */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		527C403B2D09A6B500730254 /* CTMarkDownEditor */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				52954C722D09C37500186D3B /* Exceptions for "CTMarkDownEditor" folder in "CTMarkDownEditor" target */,
+			);
 			path = CTMarkDownEditor;
 			sourceTree = "<group>";
 		};
@@ -58,6 +72,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				527C40692D09A70C00730254 /* WebKit.framework in Frameworks */,
+				52954C752D09D84D00186D3B /* HTML2Markdown in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,6 +142,7 @@
 			);
 			name = CTMarkDownEditor;
 			packageProductDependencies = (
+				52954C742D09D84D00186D3B /* HTML2Markdown */,
 			);
 			productName = CTMarkDownEditor;
 			productReference = 527C40392D09A6B500730254 /* CTMarkDownEditor.app */;
@@ -210,6 +226,9 @@
 			);
 			mainGroup = 527C40302D09A6B500730254;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				52954C732D09D7FB00186D3B /* XCRemoteSwiftPackageReference "HTML2Markdown" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 527C403A2D09A6B500730254 /* Products */;
 			projectDirPath = "";
@@ -411,6 +430,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CTMarkDownEditor/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -421,7 +442,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
@@ -451,6 +472,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CTMarkDownEditor/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -461,7 +484,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
@@ -608,6 +631,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		52954C732D09D7FB00186D3B /* XCRemoteSwiftPackageReference "HTML2Markdown" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/divadretlaw/HTML2Markdown";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		52954C742D09D84D00186D3B /* HTML2Markdown */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 52954C732D09D7FB00186D3B /* XCRemoteSwiftPackageReference "HTML2Markdown" */;
+			productName = HTML2Markdown;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 527C40312D09A6B500730254 /* Project object */;
 }
