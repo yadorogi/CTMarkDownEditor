@@ -134,8 +134,10 @@ struct PlatformWebView: NSViewRepresentable {
     @Binding var urlString: String
 
     func makeNSView(context: Context) -> WKWebView {
+        let webPagePreference = WKWebpagePreferences()
+        webPagePreference.allowsContentJavaScript = true
+        
         let configuration = WKWebViewConfiguration()
-        configuration.preferences.javaScriptEnabled = true
         configuration.websiteDataStore = .default()
         
         let webView = WKWebView(frame: .zero, configuration: configuration)
