@@ -15,8 +15,8 @@ This repositorie is still in development.
 ## Screen Shot
 
 iPadOS - Web Mode
-<img width="500" alt="SCR-20230502-nedr" src="[https://github.com/Riscait/zenn-content/assets/90010509/b0a57ed6-06ac-45b3-9b43-41b5757658d6](https://github.com/user-attachments/assets/b18f4e97-6aa7-46bd-ad7a-ba1f67df746b)">
+![iPadOS-MarkDown](https://github.com/user-attachments/assets/0b54f7d0-75bc-4d6f-8ddb-8ec3a364f2c2)
 
 iPadOS - MarkDown Mode
-<img width="500" alt="SCR-20230502-nedr" src="[https://github.com/Riscait/zenn-content/assets/90010509/b0a57ed6-06ac-45b3-9b43-41b5757658d6](https://github.com/user-attachments/assets/cdf2f14a-9aa4-41ff-bdf8-b01316e86c12)">
 
+![iPadOS-Web](https://github.com/user-attachments/assets/c64cf79e-2e47-4ad6-aea1-67cbe5a3a918)
